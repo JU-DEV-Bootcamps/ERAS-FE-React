@@ -1,0 +1,13 @@
+{
+  "keycloak": {
+    "url": "http://localhost:18080",
+    "realm": "ERAS",
+    "clientId": "eras-fe-react"
+  },
+  "rolesResource": "public-client",
+  "roleNames": {
+    "administrator": "ERAS Administrator",
+    "officer": "ERAS Student Services Officer",
+    "professional": "ERAS Professional"
+  }
+}
