@@ -14,11 +14,15 @@ describe('canAccess', () => {
   });
 
   it('lets in a user who has one of the required roles', () => {
-    expect(canAccess(['ERAS Professional'], ['officer', 'professional'], roleNames)).toBe(true);
+    expect(
+      canAccess(['ERAS Professional'], ['officer', 'professional'], roleNames)
+    ).toBe(true);
   });
 
   it('keeps out a user who has none of the required roles', () => {
-    expect(canAccess(['ERAS Professional'], ['officer'], roleNames)).toBe(false);
+    expect(canAccess(['ERAS Professional'], ['officer'], roleNames)).toBe(
+      false
+    );
   });
 
   it('keeps out a user with no ERAS role (Guest) from a route with roles', () => {
@@ -26,6 +30,8 @@ describe('canAccess', () => {
   });
 
   it('lets the Administrator pass every role check', () => {
-    expect(canAccess(['ERAS Administrator'], ['officer'], roleNames)).toBe(true);
+    expect(canAccess(['ERAS Administrator'], ['officer'], roleNames)).toBe(
+      true
+    );
   });
 });

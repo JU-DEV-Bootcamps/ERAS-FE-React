@@ -6,10 +6,12 @@ import type { Auth } from '../auth/auth';
 
 export const API_BASE_URL = '/api/v1';
 
-export function createHttpClient(auth: Pick<Auth, 'getToken' | 'login'>): AxiosInstance {
+export function createHttpClient(
+  auth: Pick<Auth, 'getToken' | 'login'>
+): AxiosInstance {
   const client = axios.create({ baseURL: API_BASE_URL });
 
-  client.interceptors.request.use(async (request) => {
+  client.interceptors.request.use(async request => {
     request.headers.set('Authorization', `Bearer ${await auth.getToken()}`);
     return request;
   });

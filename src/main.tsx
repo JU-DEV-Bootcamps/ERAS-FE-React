@@ -17,12 +17,16 @@ async function start() {
   const config = await loadConfig();
   const auth = await initAuth(config);
   const i18n = await initI18n();
-  const session = { roles: auth.roles(), roleNames: config.roleNames, logout: auth.logout };
+  const session = {
+    roles: auth.roles(),
+    roleNames: config.roleNames,
+    logout: auth.logout,
+  };
 
   createRoot(container).render(
     <StrictMode>
       <App i18n={i18n} session={session} />
-    </StrictMode>,
+    </StrictMode>
   );
 }
 

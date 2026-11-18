@@ -11,7 +11,8 @@ function flatten(resource: object, prefix = ''): Map<string, unknown> {
   for (const [key, value] of Object.entries(resource)) {
     const path = prefix ? `${prefix}.${key}` : key;
     if (value !== null && typeof value === 'object') {
-      for (const [nested, text] of flatten(value as object, path)) entries.set(nested, text);
+      for (const [nested, text] of flatten(value as object, path))
+        entries.set(nested, text);
     } else {
       entries.set(path, value);
     }
@@ -35,7 +36,10 @@ describe('translations', () => {
     ['pt-BR', ptBR],
   ])('%s has no empty text', (_language, resource) => {
     for (const [key, text] of flatten(resource)) {
-      expect(typeof text === 'string' && text.trim() !== '', `empty text at ${key}`).toBe(true);
+      expect(
+        typeof text === 'string' && text.trim() !== '',
+        `empty text at ${key}`
+      ).toBe(true);
     }
   });
 

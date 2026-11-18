@@ -23,20 +23,37 @@ Do not write the code under test, do not edit the spec, do not commit.
    import userEvent from '@testing-library/user-event';
    import { http, HttpResponse } from 'msw';
    import { setupServer } from 'msw/node';
-   import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+   import {
+     afterAll,
+     afterEach,
+     beforeAll,
+     describe,
+     expect,
+     it,
+   } from 'vitest';
 
    const server = setupServer();
-   beforeAll(() => { server.listen({ onUnhandledFrame: 'error' }); });
-   afterEach(() => { server.resetHandlers(); });
-   afterAll(() => { server.close(); });
+   beforeAll(() => {
+     server.listen({ onUnhandledFrame: 'error' });
+   });
+   afterEach(() => {
+     server.resetHandlers();
+   });
+   afterAll(() => {
+     server.close();
+   });
 
    describe('<Unit>', () => {
      it('[<change-id>/AC-<n>] <the behavior the user sees, from the THEN>', async () => {
        // GIVEN: the API answer of the scenario
-       server.use(http.get('*/api/v1/<resource>', () => HttpResponse.json(/* … */)));
+       server.use(
+         http.get('*/api/v1/<resource>', () => HttpResponse.json(/* … */))
+       );
        // WHEN: render, then act as the user does
        render(/* the unit, inside the providers it needs */);
-       await userEvent.click(screen.getByRole('button', { name: '<visible text>' }));
+       await userEvent.click(
+         screen.getByRole('button', { name: '<visible text>' })
+       );
        // THEN: assert what the user sees
        expect(await screen.findByText('<visible text>')).toBeInTheDocument();
      });
@@ -48,6 +65,7 @@ Do not write the code under test, do not edit the spec, do not commit.
      `SessionProvider` (`src/app/`), as `src/app/routing/routing.test.tsx` does.
    - The assertions must check the THEN of the scenario, not merely render the unit.
    - Helper or edge-case tests are welcome but carry **no** AC key; one key per test, one test per AC on this side.
+
 4. **Run it alone and watch it fail** for the right reason (the behavior is missing, not a typo):
    `npm test -- run <path of the test file>`. Report the failure message.
 5. **Never leave** `it.only`, `describe.only`, `it.skip`, `describe.skip`, `fit` or `xit` in the file.

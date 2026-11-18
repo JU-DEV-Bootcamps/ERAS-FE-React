@@ -11,7 +11,14 @@ export const MIN_TOKEN_VALIDITY_SECONDS = 30;
 /** The part of a keycloak-js instance this module uses (lets the tests pass a fake one). */
 export type KeycloakLike = Pick<
   Keycloak,
-  'init' | 'login' | 'logout' | 'updateToken' | 'token' | 'tokenParsed' | 'authenticated' | 'onTokenExpired'
+  | 'init'
+  | 'login'
+  | 'logout'
+  | 'updateToken'
+  | 'token'
+  | 'tokenParsed'
+  | 'authenticated'
+  | 'onTokenExpired'
 >;
 
 export type KeycloakFactory = (options: AppConfig['keycloak']) => KeycloakLike;
@@ -25,9 +32,12 @@ export interface Auth {
   logout: () => Promise<void>;
 }
 
-const createKeycloak: KeycloakFactory = (options) => new Keycloak(options);
+const createKeycloak: KeycloakFactory = options => new Keycloak(options);
 
-export async function initAuth(config: AppConfig, create: KeycloakFactory = createKeycloak): Promise<Auth> {
+export async function initAuth(
+  config: AppConfig,
+  create: KeycloakFactory = createKeycloak
+): Promise<Auth> {
   const keycloak = create(config.keycloak);
 
   await keycloak.init({
@@ -37,7 +47,9 @@ export async function initAuth(config: AppConfig, create: KeycloakFactory = crea
   });
 
   keycloak.onTokenExpired = () => {
-    keycloak.updateToken(MIN_TOKEN_VALIDITY_SECONDS).catch(() => keycloak.login());
+    keycloak
+      .updateToken(MIN_TOKEN_VALIDITY_SECONDS)
+      .catch(() => keycloak.login());
   };
 
   return {
@@ -46,7 +58,9 @@ export async function initAuth(config: AppConfig, create: KeycloakFactory = crea
         await keycloak.updateToken(MIN_TOKEN_VALIDITY_SECONDS);
       } catch (error) {
         await keycloak.login();
-        throw new Error('The session expired; logging in again', { cause: error });
+        throw new Error('The session expired; logging in again', {
+          cause: error,
+        });
       }
       if (!keycloak.token) {
         throw new Error('No access token after login');
@@ -54,7 +68,10 @@ export async function initAuth(config: AppConfig, create: KeycloakFactory = crea
       return keycloak.token;
     },
     roles() {
-      return keycloak.tokenParsed?.resource_access?.[config.rolesResource]?.roles ?? [];
+      return (
+        keycloak.tokenParsed?.resource_access?.[config.rolesResource]?.roles ??
+        []
+      );
     },
     login: () => keycloak.login(),
     logout: () => keycloak.logout(),

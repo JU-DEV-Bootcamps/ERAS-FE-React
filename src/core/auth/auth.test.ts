@@ -2,10 +2,18 @@ import type { KeycloakInitOptions } from 'keycloak-js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { AppConfig } from '../config/config';
-import { initAuth, MIN_TOKEN_VALIDITY_SECONDS, type KeycloakLike } from './auth';
+import {
+  initAuth,
+  MIN_TOKEN_VALIDITY_SECONDS,
+  type KeycloakLike,
+} from './auth';
 
 const config: AppConfig = {
-  keycloak: { url: 'http://localhost:18080', realm: 'ERAS', clientId: 'eras-fe-react' },
+  keycloak: {
+    url: 'http://localhost:18080',
+    realm: 'ERAS',
+    clientId: 'eras-fe-react',
+  },
   rolesResource: 'public-client',
   roleNames: {
     administrator: 'ERAS Administrator',
@@ -47,7 +55,7 @@ class FakeKeycloak implements KeycloakLike {
 
 async function start() {
   let created: FakeKeycloak | undefined;
-  const auth = await initAuth(config, (options) => {
+  const auth = await initAuth(config, options => {
     created = new FakeKeycloak(options);
     return created;
   });
@@ -67,8 +75,14 @@ describe('initAuth', () => {
 
   it('logs in by redirect with PKCE S256 and without the check-sso iframe', async () => {
     const { keycloak } = await start();
-    expect(keycloak.initOptions).toMatchObject({ onLoad: 'login-required', pkceMethod: 'S256', checkLoginIframe: false });
-    expect(keycloak.initOptions).not.toHaveProperty('silentCheckSsoRedirectUri');
+    expect(keycloak.initOptions).toMatchObject({
+      onLoad: 'login-required',
+      pkceMethod: 'S256',
+      checkLoginIframe: false,
+    });
+    expect(keycloak.initOptions).not.toHaveProperty(
+      'silentCheckSsoRedirectUri'
+    );
   });
 
   it('starts from no stored token', async () => {
@@ -88,13 +102,17 @@ describe('initAuth', () => {
   it('refreshes the token before returning it', async () => {
     const { auth, keycloak } = await start();
     await expect(auth.getToken()).resolves.toBe('refreshed-token');
-    expect(keycloak.updateToken).toHaveBeenCalledWith(MIN_TOKEN_VALIDITY_SECONDS);
+    expect(keycloak.updateToken).toHaveBeenCalledWith(
+      MIN_TOKEN_VALIDITY_SECONDS
+    );
   });
 
   it('refreshes the token when it expires', async () => {
     const { keycloak } = await start();
     keycloak.onTokenExpired?.();
-    expect(keycloak.updateToken).toHaveBeenCalledWith(MIN_TOKEN_VALIDITY_SECONDS);
+    expect(keycloak.updateToken).toHaveBeenCalledWith(
+      MIN_TOKEN_VALIDITY_SECONDS
+    );
   });
 
   it('sends the user to log in again when the refresh fails', async () => {

@@ -9,8 +9,12 @@ export type RoleKey = keyof RoleNames;
  * A route without roles is open to every authenticated user; the Administrator passes every check
  * (AGENTS.md section 4.3).
  */
-export function canAccess(userRoles: readonly string[], required: readonly RoleKey[], roleNames: RoleNames): boolean {
+export function canAccess(
+  userRoles: readonly string[],
+  required: readonly RoleKey[],
+  roleNames: RoleNames
+): boolean {
   if (required.length === 0) return true;
   if (userRoles.includes(roleNames.administrator)) return true;
-  return required.some((role) => userRoles.includes(roleNames[role]));
+  return required.some(role => userRoles.includes(roleNames[role]));
 }

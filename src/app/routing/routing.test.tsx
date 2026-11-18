@@ -25,14 +25,20 @@ beforeAll(async () => {
 });
 
 function renderAt(path: string, roles: string[]) {
-  const session: Session = { roles, roleNames, logout: () => Promise.resolve() };
-  const router = createMemoryRouter(buildRouteObjects(testRoutes), { initialEntries: [path] });
+  const session: Session = {
+    roles,
+    roleNames,
+    logout: () => Promise.resolve(),
+  };
+  const router = createMemoryRouter(buildRouteObjects(testRoutes), {
+    initialEntries: [path],
+  });
   render(
     <AppProviders i18n={translations}>
       <SessionProvider session={session}>
         <RouterProvider router={router} />
       </SessionProvider>
-    </AppProviders>,
+    </AppProviders>
   );
 }
 
@@ -44,7 +50,9 @@ describe('route table and role guard', () => {
 
   it('sends a user without the required role to "access denied"', async () => {
     renderAt('/officers', ['ERAS Professional']);
-    expect(await screen.findByRole('heading', { name: 'Access denied' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Access denied' })
+    ).toBeInTheDocument();
     expect(screen.queryByText('officer page')).not.toBeInTheDocument();
   });
 
@@ -60,6 +68,8 @@ describe('route table and role guard', () => {
 
   it('shows "not found" for an unknown path', async () => {
     renderAt('/no-such-page', ['ERAS Administrator']);
-    expect(await screen.findByRole('heading', { name: 'Page not found' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Page not found' })
+    ).toBeInTheDocument();
   });
 });

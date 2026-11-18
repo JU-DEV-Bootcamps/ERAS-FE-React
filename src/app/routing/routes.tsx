@@ -18,12 +18,14 @@ export interface AppRoute {
 }
 
 /** The screens of ERAS v3. Each module change adds its routes here, with the roles its spec gives them. */
-export const appRoutes: AppRoute[] = [{ path: '/', element: <HomePage />, roles: [] }];
+export const appRoutes: AppRoute[] = [
+  { path: '/', element: <HomePage />, roles: [] },
+];
 
 /** The router's route objects: every app route behind its role guard, plus "access denied" and "not found". */
 export function buildRouteObjects(routes: readonly AppRoute[]): RouteObject[] {
   return [
-    ...routes.map((route) => ({
+    ...routes.map(route => ({
       path: route.path,
       element: <RoleGuard roles={route.roles}>{route.element}</RoleGuard>,
     })),

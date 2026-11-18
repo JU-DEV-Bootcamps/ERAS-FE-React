@@ -12,7 +12,9 @@ interface AppProps {
 }
 
 export function App({ i18n, session }: AppProps) {
-  const [router] = useState(() => createBrowserRouter(buildRouteObjects(appRoutes)));
+  const [router] = useState(() =>
+    createBrowserRouter(buildRouteObjects(appRoutes))
+  );
   return (
     <AppProviders i18n={i18n}>
       <SessionProvider session={session}>

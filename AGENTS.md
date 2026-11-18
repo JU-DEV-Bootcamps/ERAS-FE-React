@@ -14,7 +14,8 @@ Commands below are written from the parent repository root; when you are already
 cd ERAS-FE-React
 npm ci                                   # Node version in .nvmrc
 npm run dev                              # http://localhost:5173, /api proxied to the backend on :8080
-npm run lint                             # ESLint (typescript-eslint strict, react-hooks, jsx-a11y)   ← gate
+npm run lint                             # ESLint (typescript-eslint strict, react-hooks, jsx-a11y, Prettier)   ← gate
+npm run format                           # rewrite every file with Prettier (.prettierrc.json, as ERAS-FE)
 npm run typecheck                        # tsc --noEmit                                               ← gate
 npm run test:ci                          # all tests once, with coverage (fails under 15% of lines)   ← gate
 npm run build                            # production build in dist/                                  ← gate
@@ -28,15 +29,15 @@ The runtime configuration is `public/config.json` (Keycloak URL, realm, client i
 
 **Local Keycloak client.** The parent's `Keycloak/realm-export.json` defines the client `eras-fe-react`, but Keycloak imports that file only when the realm `ERAS` does not exist yet in its data volume. If your local Keycloak (`http://localhost:18080`) already had the realm, create the client by hand, in realm `ERAS` → Clients, with exactly these values; a missing or different web origin makes the login end in "ERAS could not start: Failed to fetch" (Keycloak answers `403 Invalid origin` to the token request):
 
-| Setting | Value |
-|---|---|
-| Client ID | `eras-fe-react` |
-| Client authentication | Off (public client) |
-| Authentication flow | Standard flow only (no direct access grants, no implicit flow) |
-| Valid redirect URIs | `http://localhost:5173/*` |
-| Valid post logout redirect URIs | `http://localhost:5173/*` |
-| Web origins | `http://localhost:5173` (no trailing slash, no `/*`) |
-| Advanced → Proof Key for Code Exchange Code Challenge Method | `S256` |
+| Setting                                                       | Value                                                                                                                                        |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Client ID                                                     | `eras-fe-react`                                                                                                                              |
+| Client authentication                                         | Off (public client)                                                                                                                          |
+| Authentication flow                                           | Standard flow only (no direct access grants, no implicit flow)                                                                               |
+| Valid redirect URIs                                           | `http://localhost:5173/*`                                                                                                                    |
+| Valid post logout redirect URIs                               | `http://localhost:5173/*`                                                                                                                    |
+| Web origins                                                   | `http://localhost:5173` (no trailing slash, no `/*`)                                                                                         |
+| Advanced → Proof Key for Code Exchange Code Challenge Method  | `S256`                                                                                                                                       |
 | Client scopes → `eras-fe-react-dedicated` → mapper "Audience" | Included client audience `api-client`, added to the access token (the audience the backend validates; without it every API call answers 401) |
 
 The roles come from the roles of the client `public-client` that the seed users already have; the client needs no roles of its own. The seed users and their passwords are in the same `realm-export.json`.
@@ -47,13 +48,13 @@ The roles come from the roles of the client `public-client` that the seed users 
 
 ### 4.2 Frontend v3 — React 19 (`ERAS-FE-React/`)
 
-| Layer | Path | Owns |
-|---|---|---|
-| Bootstrap | `src/main.tsx`, `src/app/` | Start order (configuration, login, texts, render), providers (`AppProviders`), the session context, the route table (`routing/routes.tsx`) and its role guard, the shell pages |
-| Core | `src/core/` | Singletons without UI: runtime configuration (`config/`), login and roles (`auth/`), the HTTP client (`http/`), texts (`i18n/`) |
-| Features | `src/features/<feature>/` | One folder per ERAS module: its pages, components, hooks and API calls (created by the module's change) |
-| Shared | `src/shared/` | Reusable pieces used by two or more features (created when the second feature needs one) |
-| Tests | next to each unit, `src/test/setup.ts` | `*.test.ts` / `*.test.tsx`; the setup file registers the jest-dom matchers and cleans up after each test |
+| Layer     | Path                                   | Owns                                                                                                                                                                           |
+| --------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Bootstrap | `src/main.tsx`, `src/app/`             | Start order (configuration, login, texts, render), providers (`AppProviders`), the session context, the route table (`routing/routes.tsx`) and its role guard, the shell pages |
+| Core      | `src/core/`                            | Singletons without UI: runtime configuration (`config/`), login and roles (`auth/`), the HTTP client (`http/`), texts (`i18n/`)                                                |
+| Features  | `src/features/<feature>/`              | One folder per ERAS module: its pages, components, hooks and API calls (created by the module's change)                                                                        |
+| Shared    | `src/shared/`                          | Reusable pieces used by two or more features (created when the second feature needs one)                                                                                       |
+| Tests     | next to each unit, `src/test/setup.ts` | `*.test.ts` / `*.test.tsx`; the setup file registers the jest-dom matchers and cleans up after each test                                                                       |
 
 Dependencies point inward: `features` may use `shared`, `core` and `app/session`; `core` uses nothing from `app` or `features`; a feature never imports another feature. ADR-0016 (state and layers) will make this structure final before the first module.
 

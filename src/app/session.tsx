@@ -11,7 +11,13 @@ export interface Session {
 
 const SessionContext = createContext<Session | null>(null);
 
-export function SessionProvider({ session, children }: { session: Session; children: ReactNode }) {
+export function SessionProvider({
+  session,
+  children,
+}: {
+  session: Session;
+  children: ReactNode;
+}) {
   return <SessionContext value={session}>{children}</SessionContext>;
 }
 

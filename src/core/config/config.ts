@@ -38,10 +38,14 @@ function valueAt(source: unknown, path: string): unknown {
   }, source);
 }
 
-export async function loadConfig(fetchFn: typeof fetch = fetch): Promise<AppConfig> {
+export async function loadConfig(
+  fetchFn: typeof fetch = fetch
+): Promise<AppConfig> {
   const response = await fetchFn(CONFIG_URL);
   if (!response.ok) {
-    throw new Error(`${CONFIG_URL} could not be loaded (HTTP ${String(response.status)})`);
+    throw new Error(
+      `${CONFIG_URL} could not be loaded (HTTP ${String(response.status)})`
+    );
   }
 
   let parsed: unknown;
@@ -51,12 +55,14 @@ export async function loadConfig(fetchFn: typeof fetch = fetch): Promise<AppConf
     throw new Error(`${CONFIG_URL} is not valid JSON`);
   }
 
-  const missing = REQUIRED_KEYS.filter((key) => {
+  const missing = REQUIRED_KEYS.filter(key => {
     const value = valueAt(parsed, key);
     return typeof value !== 'string' || value.trim() === '';
   });
   if (missing.length > 0) {
-    throw new Error(`${CONFIG_URL} is missing or has an empty value for: ${missing.join(', ')}`);
+    throw new Error(
+      `${CONFIG_URL} is missing or has an empty value for: ${missing.join(', ')}`
+    );
   }
 
   return parsed as AppConfig;

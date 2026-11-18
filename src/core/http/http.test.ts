@@ -1,6 +1,14 @@
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import { createHttpClient } from './http';
 
@@ -30,7 +38,7 @@ describe('createHttpClient', () => {
       http.get('*/api/v1/feature-flags', ({ request }) => {
         path = new URL(request.url).pathname;
         return HttpResponse.json([]);
-      }),
+      })
     );
     await createHttpClient(fakeAuth()).get('/feature-flags');
     expect(path).toBe('/api/v1/feature-flags');
@@ -42,23 +50,37 @@ describe('createHttpClient', () => {
       http.get('*/api/v1/feature-flags', ({ request }) => {
         authorization = request.headers.get('Authorization');
         return HttpResponse.json([]);
-      }),
+      })
     );
     await createHttpClient(fakeAuth('abc')).get('/feature-flags');
     expect(authorization).toBe('Bearer abc');
   });
 
   it('asks for a new login when the API answers 401', async () => {
-    server.use(http.get('*/api/v1/feature-flags', () => new HttpResponse(null, { status: 401 })));
+    server.use(
+      http.get(
+        '*/api/v1/feature-flags',
+        () => new HttpResponse(null, { status: 401 })
+      )
+    );
     const auth = fakeAuth();
-    await expect(createHttpClient(auth).get('/feature-flags')).rejects.toThrow();
+    await expect(
+      createHttpClient(auth).get('/feature-flags')
+    ).rejects.toThrow();
     expect(auth.login).toHaveBeenCalledOnce();
   });
 
   it('does not log in again for other errors', async () => {
-    server.use(http.get('*/api/v1/feature-flags', () => new HttpResponse(null, { status: 403 })));
+    server.use(
+      http.get(
+        '*/api/v1/feature-flags',
+        () => new HttpResponse(null, { status: 403 })
+      )
+    );
     const auth = fakeAuth();
-    await expect(createHttpClient(auth).get('/feature-flags')).rejects.toThrow();
+    await expect(
+      createHttpClient(auth).get('/feature-flags')
+    ).rejects.toThrow();
     expect(auth.login).not.toHaveBeenCalled();
   });
 });
