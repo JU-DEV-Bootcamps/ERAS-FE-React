@@ -56,7 +56,7 @@ The roles come from the roles of the client `public-client` that the seed users 
 | Shared    | `src/shared/`                          | Reusable pieces used by two or more features (created when the second feature needs one)                                                                                       |
 | Tests     | next to each unit, `src/test/setup.ts` | `*.test.ts` / `*.test.tsx`; the setup file registers the jest-dom matchers and cleans up after each test                                                                       |
 
-Dependencies point inward: `features` may use `shared`, `core` and `app/session`; `core` uses nothing from `app` or `features`; a feature never imports another feature. ADR-0016 (state and layers) will make this structure final before the first module.
+Dependencies point inward: `features` may use `shared`, `core` and `app/session`; `core` uses nothing from `app` or `features`; a feature never imports another feature. ADR-0015 (state and layers) will make this structure final before the first module.
 
 ---
 
@@ -65,13 +65,15 @@ Dependencies point inward: `features` may use `shared`, `core` and `app/session`
 ### 7.1 Golden path for a new frontend feature
 
 1. **Route.** Add one entry per screen to `appRoutes` in `src/app/routing/routes.tsx` with its `path`, its `element` and its `roles` (role keys `administrator`, `officer`, `professional`; an empty list opens it to every signed-in user). The role guard applies the role rules of the parent's §4.3 and sends anyone else to "access denied". The roles come from the spec's ACs.
-2. **API.** Call the backend only through the client of `src/core/http/` (base `/api/v1`, bearer token added for you). Never build an absolute URL and never call `fetch` or `axios` directly from a component. The client generated from the backend's OpenAPI document and its adapters are decided by ADR-0015 before the first module.
+2. **API.** Call the backend only through the client of `src/core/http/` (base `/api/v1`, bearer token added for you). Never build an absolute URL and never call `fetch` or `axios` directly from a component. The client generated from the backend's OpenAPI document and its adapters are decided by ADR-0014 before the first module.
 3. **Server state.** Read and change server data with TanStack Query hooks (`useQuery`, `useMutation`) in the feature folder; components do not keep copies of server data in their own state.
 4. **Component.** Function components and hooks only. Keep a component's props typed with an `interface`; no default exports.
 5. **Forms.** React Hook Form with a Zod schema; validation messages come from the texts.
 6. **Permissions in the UI.** Read the user's roles from `useSession()` and decide with `canAccess` from `src/core/auth/access.ts`. Never compare raw role strings.
-7. **Texts.** Every user-facing text goes in the resources of `src/core/i18n/` in the three languages (`en.ts`, `es.ts` neutral Spanish, `pt-BR.ts` Brazilian Portuguese), under the same key, and is shown with `useTranslation()`. English is the initial language.
-8. **UI library.** Not decided yet (ADR-0017); until then, plain semantic HTML.
+7. **Texts.** Every user-facing text goes in the resources of `src/core/i18n/` in the three languages (`en.ts`, `es.ts` neutral Spanish, `pt-BR.ts` Brazilian Portuguese), under the same key, and is shown with `useTranslation()`. English is the initial language. The skill `.claude/skills/eras-fe-react-i18n/SKILL.md` gives the writing rules for each language.
+8. **UI library.** Not decided yet (ADR-0016); until then, plain semantic HTML.
+
+The skill `.claude/skills/eras-fe-react-feature/SKILL.md` walks through one implementation task along these steps, and stops where an ADR is still pending.
 
 ### 7.2 Frontend rules
 
@@ -82,6 +84,8 @@ Dependencies point inward: `features` may use `shared`, `core` and `app/session`
 - Tokens stay in memory. Never write a token or a refresh token to `localStorage`, `sessionStorage`, a cookie or a URL (ADR-0013).
 - Dependencies are pinned to an exact version (`.npmrc` has `save-exact=true`), and a library is added by the first change that uses it (ADR-0012).
 - Accessibility: the jsx-a11y rules are errors; interactive elements are real buttons and links, every input has a label.
+
+`npm run lint` enforces four of these rules as errors that cite this section: no default exports in `src/`, no `axios` or `fetch` in `src/app`, `src/features` or `src/shared` (only through `src/core/http/`), no `localStorage`, `sessionStorage` or `document.cookie` outside tests, and no import from `src/app` or `src/features` inside `src/core`. The skill `.claude/skills/eras-fe-react-review/SKILL.md` reviews a diff for the rules lint cannot check.
 
 ### 7.3 Frontend tests — Vitest + React Testing Library (`ERAS-FE-React/src/`)
 
