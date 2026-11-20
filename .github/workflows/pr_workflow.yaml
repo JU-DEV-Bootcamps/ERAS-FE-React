@@ -1,8 +1,8 @@
 name: Pull request workflow
 
 # The FE-React gates of openspec/sides.conf in the ERAS parent repository (AGENTS.md section 8.7):
-# lint, typecheck, test:ci (coverage of at least 15% lines, enforced by vite.config.ts) and build.
-# Every step blocks the pull request; there is no continue-on-error.
+# lint, typecheck, test:ci (coverage of at least 15% lines, enforced by vite.config.ts) and build,
+# plus the dependency audit of ADR-0017. Every step blocks the pull request; there is no continue-on-error.
 on:
   pull_request:
     branches:
@@ -12,22 +12,32 @@ on:
 permissions:
   contents: read
 
+# A newer push to the same pull request cancels the run it replaces (ADR-0017).
+concurrency:
+  group: pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gates:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
+      # Actions are pinned to a full commit SHA, never to a movable tag (ADR-0017).
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Node.js (version from .nvmrc)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
 
+      # No dependency runs its install scripts in CI (ADR-0017).
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
 
       - name: Lint
         run: npm run lint

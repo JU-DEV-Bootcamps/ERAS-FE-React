@@ -19,6 +19,7 @@ npm run format                           # rewrite every file with Prettier (.pr
 npm run typecheck                        # tsc --noEmit                                               ← gate
 npm run test:ci                          # all tests once, with coverage (fails under 15% of lines)   ← gate
 npm run build                            # production build in dist/                                  ← gate
+npm audit --audit-level=high             # fails on a high or critical advisory (ADR-0017)            ← gate in CI
 npm test                                 # Vitest in watch mode
 npm test -- run src/features/<feature>   # the tests of one folder, once
 ```
@@ -83,6 +84,7 @@ The skill `.claude/skills/eras-fe-react-feature/SKILL.md` walks through one impl
 - Configuration values come from `public/config.json` through `src/core/config/`. Never hard-code a URL, a realm, a client id or a role name.
 - Tokens stay in memory. Never write a token or a refresh token to `localStorage`, `sessionStorage`, a cookie or a URL (ADR-0013).
 - Dependencies are pinned to an exact version (`.npmrc` has `save-exact=true`), and a library is added by the first change that uses it (ADR-0012).
+- A version is adopted only once it has been published for at least 7 days; a fix for a known vulnerability may come earlier, after a reviewer reads its release notes and diff. No dependency update is merged without review, and Dependabot's update pull requests follow the same gates (ADR-0017).
 - Accessibility: the jsx-a11y rules are errors; interactive elements are real buttons and links, every input has a label.
 
 `npm run lint` enforces four of these rules as errors that cite this section: no default exports in `src/`, no `axios` or `fetch` in `src/app`, `src/features` or `src/shared` (only through `src/core/http/`), no `localStorage`, `sessionStorage` or `document.cookie` outside tests, and no import from `src/app` or `src/features` inside `src/core`. The skill `.claude/skills/eras-fe-react-review/SKILL.md` reviews a diff for the rules lint cannot check.

@@ -1,0 +1,41 @@
+# Dependency updates of ERAS v3 (ADR-0017). Weekly and grouped to keep the noise and the CI runs low,
+# with a 7-day cooldown so a malicious release has time to be detected before it reaches a pull request.
+# Nothing here merges automatically: every update pull request runs the gates and needs a review.
+# Security updates do not wait for the cooldown and are not grouped.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-and-patch:
+        update-types:
+          - minor
+          - patch
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - dependencies
