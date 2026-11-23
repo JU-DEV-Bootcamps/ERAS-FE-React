@@ -3,13 +3,22 @@
 import axios, { isAxiosError, type AxiosInstance } from 'axios';
 
 import type { Auth } from '../auth/auth';
+import { toApiError } from './api-error';
 
 export const API_BASE_URL = '/api/v1';
+/** The HTTP client the screens receive; features name it with this type, never with axios. */
+export type HttpClient = AxiosInstance;
+/** Milliseconds a request may take before it fails (ADR-0014). */
+export const HTTP_TIMEOUT_MS = 30_000;
 
+/** The one axios instance of ERAS v3; every failure it rejects with is an ApiError. */
 export function createHttpClient(
   auth: Pick<Auth, 'getToken' | 'login'>
-): AxiosInstance {
-  const client = axios.create({ baseURL: API_BASE_URL });
+): HttpClient {
+  const client = axios.create({
+    baseURL: API_BASE_URL,
+    timeout: HTTP_TIMEOUT_MS,
+  });
 
   client.interceptors.request.use(async request => {
     request.headers.set('Authorization', `Bearer ${await auth.getToken()}`);
@@ -20,7 +29,7 @@ export function createHttpClient(
     if (isAxiosError(error) && error.response?.status === 401) {
       await auth.login();
     }
-    throw error;
+    throw toApiError(error);
   });
 
   return client;

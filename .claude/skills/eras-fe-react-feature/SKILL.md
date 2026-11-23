@@ -14,13 +14,12 @@ test's assertions, and do not commit.
 
 Stop and tell the user which ADR is missing, instead of choosing yourself, when the task needs:
 
-- **API calls** (ADR-0014, the client generated from the backend's OpenAPI document). `createHttpClient` in
-  `src/core/http/http.ts` exists, but no instance is given to the screens yet: `src/main.tsx` does not create
-  one. How screens get it (context, module, query function) is part of ADR-0014 / ADR-0015.
-- **Shared state or a new layer** beyond the table in §4.2 (ADR-0015).
-- **Any UI component library** (ADR-0016). Until it is decided, use plain semantic HTML.
-- **A form** for the first time: React Hook Form and Zod are the stack (ADR-0012), but they are not installed.
-  The first change that needs a form installs them, so check that the task says so.
+- **A global store or a new layer** beyond the table in §4.2: ADR-0015 rules both out, so a need for one is a
+  new ADR, not a choice of this task.
+- **A UI library or styling system other than MUI** and its theme (ADR-0016).
+- **A code generator** for API calls (ADR-0014 rules it out): API code is written by hand as in §7.1 step 2.
+- **A form** for the first time: React Hook Form is the stack (ADR-0012), but it is not installed. The first
+  change that needs a form installs it, so check that the task says so.
 
 ## Steps
 

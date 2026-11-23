@@ -127,6 +127,18 @@ describe('initAuth', () => {
     expect(auth.roles()).toEqual(['ERAS Professional']);
   });
 
+  it('gives the Keycloak subject of the token as the user id', async () => {
+    const { auth, keycloak } = await start();
+    keycloak.tokenParsed = { sub: 'user-123' };
+    expect(auth.userId()).toBe('user-123');
+  });
+
+  it('has an empty user id when the token carries no subject', async () => {
+    const { auth, keycloak } = await start();
+    keycloak.tokenParsed = {};
+    expect(auth.userId()).toBe('');
+  });
+
   it('has no role when the token carries no roles resource', async () => {
     const { auth, keycloak } = await start();
     keycloak.tokenParsed = {};

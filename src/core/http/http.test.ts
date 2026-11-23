@@ -10,7 +10,8 @@ import {
   vi,
 } from 'vitest';
 
-import { createHttpClient } from './http';
+import { ApiError } from './api-error';
+import { createHttpClient, HTTP_TIMEOUT_MS } from './http';
 
 const server = setupServer();
 
@@ -68,6 +69,27 @@ describe('createHttpClient', () => {
       createHttpClient(auth).get('/feature-flags')
     ).rejects.toThrow();
     expect(auth.login).toHaveBeenCalledOnce();
+  });
+
+  it('gives up on a request after the default timeout', () => {
+    expect(HTTP_TIMEOUT_MS).toBe(30_000);
+    expect(createHttpClient(fakeAuth()).defaults.timeout).toBe(HTTP_TIMEOUT_MS);
+  });
+
+  it('rejects a failed request with an ApiError', async () => {
+    server.use(
+      http.get('*/api/v1/feature-flags', () =>
+        HttpResponse.json(
+          { statusCode: 500, message: 'Something failed', detailed: 'trace' },
+          { status: 500 }
+        )
+      )
+    );
+    const failure: unknown = await createHttpClient(fakeAuth())
+      .get('/feature-flags')
+      .catch((error: unknown) => error);
+    expect(failure).toBeInstanceOf(ApiError);
+    expect(failure).toMatchObject({ status: 500, message: 'Something failed' });
   });
 
   it('does not log in again for other errors', async () => {

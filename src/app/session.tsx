@@ -4,6 +4,8 @@ import type { RoleNames } from '../core/auth/access';
 
 /** What the screens know about the signed-in user. */
 export interface Session {
+  /** The Keycloak subject of the user, the id the backend scopes their own data by. */
+  userId: string;
   roles: readonly string[];
   roleNames: RoleNames;
   logout: () => Promise<void>;

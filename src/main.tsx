@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 import { initAuth } from './core/auth/auth';
 import { loadConfig } from './core/config/config';
+import { createHttpClient } from './core/http/http';
 import { initI18n } from './core/i18n/i18n';
 
 const root = document.getElementById('root');
@@ -17,7 +18,9 @@ async function start() {
   const config = await loadConfig();
   const auth = await initAuth(config);
   const i18n = await initI18n();
+  const httpClient = createHttpClient(auth);
   const session = {
+    userId: auth.userId(),
     roles: auth.roles(),
     roleNames: config.roleNames,
     logout: auth.logout,
@@ -25,7 +28,7 @@ async function start() {
 
   createRoot(container).render(
     <StrictMode>
-      <App i18n={i18n} session={session} />
+      <App i18n={i18n} session={session} httpClient={httpClient} />
     </StrictMode>
   );
 }

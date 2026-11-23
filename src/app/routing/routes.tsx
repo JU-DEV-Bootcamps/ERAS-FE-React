@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import type { RouteObject } from 'react-router';
+import { Navigate, type RouteObject } from 'react-router';
 
 import type { RoleKey } from '../../core/auth/access';
 import { AccessDeniedPage } from '../pages/AccessDeniedPage';
-import { HomePage } from '../pages/HomePage';
+import { HomePage } from '../../features/home/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { RoleGuard } from './RoleGuard';
 
@@ -19,7 +19,14 @@ export interface AppRoute {
 
 /** The screens of ERAS v3. Each module change adds its routes here, with the roles its spec gives them. */
 export const appRoutes: AppRoute[] = [
-  { path: '/', element: <HomePage />, roles: [] },
+  // The root address leads to Home, as in v2; replace keeps '/' out of the history.
+  { path: '/', element: <Navigate to="/home" replace />, roles: [] },
+  {
+    path: '/home',
+    element: <HomePage />,
+    // Open to every signed-in user, as in v2; a Guest sees Home without its data (design D12).
+    roles: [],
+  },
 ];
 
 /** The router's route objects: every app route behind its role guard, plus "access denied" and "not found". */

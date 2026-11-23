@@ -29,7 +29,7 @@ audits tasks, AC tests, gates and drift.
    | 8   | Configuration and tokens (§7.2)  | A hard-coded URL, realm, client id or role name instead of `src/core/config/`; a token placed in a URL                                                                                                                                                          |
    | 9   | Dependencies (§7.2, ADR-0012)    | A new package in `package.json` that no task of the change names, or one not pinned to an exact version                                                                                                                                                         |
    | 10  | AC tests (§7.3)                  | An `[<change-id>/AC-n]` test that only renders and does not assert the THEN of its scenario; a query by CSS class or test id where a role or text exists                                                                                                        |
-   | 11  | Pending ADRs                     | Code that takes a decision of ADR-0014 (API client), ADR-0015 (state and layers) or ADR-0016 (UI library) before it is Accepted                                                                                                                                 |
+   | 11  | Accepted ADRs                    | API code that departs from ADR-0014 (generated code, axios outside `src/core/http/`, a response without its Zod schema, an `ApiError` body shown or logged), state that departs from ADR-0015, or a color, size or library that departs from ADR-0016           |
 
 3. **Check each finding against the code** before reporting it. Report only what you can point to.
 

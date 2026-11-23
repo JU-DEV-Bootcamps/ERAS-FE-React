@@ -3,6 +3,7 @@ import type { i18n } from 'i18next';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { createHttpClient } from '../../core/http/http';
 import { initI18n } from '../../core/i18n/i18n';
 import { AppProviders } from '../AppProviders';
 import { SessionProvider, type Session } from '../session';
@@ -26,6 +27,7 @@ beforeAll(async () => {
 
 function renderAt(path: string, roles: string[]) {
   const session: Session = {
+    userId: 'user-1',
     roles,
     roleNames,
     logout: () => Promise.resolve(),
@@ -34,7 +36,13 @@ function renderAt(path: string, roles: string[]) {
     initialEntries: [path],
   });
   render(
-    <AppProviders i18n={translations}>
+    <AppProviders
+      i18n={translations}
+      httpClient={createHttpClient({
+        getToken: () => Promise.resolve('token'),
+        login: () => Promise.resolve(),
+      })}
+    >
       <SessionProvider session={session}>
         <RouterProvider router={router} />
       </SessionProvider>

@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import boundaries from 'eslint-plugin-boundaries';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -9,6 +10,8 @@ const tokenMessage =
   'Tokens stay in memory: never use browser storage or cookies (AGENTS.md section 7.2, ADR-0013).';
 const httpMessage =
   'Call the backend only through the client of src/core/http/ (AGENTS.md section 7.1, step 2).';
+const layersMessage =
+  'This import crosses the layers of AGENTS.md section 4.2 (ADR-0015): a feature imports only shared, core and app/session, never another feature.';
 const storageGlobals = ['localStorage', 'sessionStorage'].map(name => ({
   name,
   message: tokenMessage,
@@ -94,6 +97,72 @@ export default tseslint.config(
               regex: String.raw`^(\.\./)+(app|features)(/|$)`,
               message:
                 'src/core uses nothing from src/app or src/features: dependencies point inward (AGENTS.md section 4.2).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // The layers of AGENTS.md section 4.2 (ADR-0015): a feature imports only shared, core and app/session, never
+  // another feature; core imports only core; shared imports only shared and core. Imports inside one element pass.
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: { boundaries },
+    settings: {
+      'import/resolver': {
+        node: { extensions: ['.ts', '.tsx', '.js'] },
+      },
+      'boundaries/files': [
+        { pattern: 'src/main.tsx', category: 'main' },
+        { pattern: 'src/app/session.tsx', category: 'session' },
+      ],
+      'boundaries/elements': [
+        { type: 'app', pattern: 'src/app' },
+        { type: 'core', pattern: 'src/core' },
+        { type: 'feature', pattern: 'src/features/*', capture: ['name'] },
+        { type: 'shared', pattern: 'src/shared' },
+        { type: 'test', pattern: 'src/test' },
+      ],
+    },
+    rules: {
+      'boundaries/dependencies': [
+        'error',
+        {
+          default: 'disallow',
+          message: layersMessage,
+          policies: [
+            { allow: { dependency: { relationship: { to: 'internal' } } } },
+            {
+              from: { file: { categories: 'main' } },
+              allow: { to: { element: { types: ['app', 'core'] } } },
+            },
+            {
+              from: { element: { types: ['app', 'test'] } },
+              allow: {
+                to: {
+                  element: {
+                    types: ['app', 'core', 'feature', 'shared'],
+                  },
+                },
+              },
+            },
+            {
+              from: { element: { type: 'feature' } },
+              allow: {
+                to: { element: { types: ['shared', 'core', 'test'] } },
+              },
+            },
+            {
+              from: { element: { type: 'feature' } },
+              allow: { to: { file: { categories: 'session' } } },
+            },
+            {
+              from: { element: { type: 'shared' } },
+              allow: { to: { element: { types: ['core', 'test'] } } },
+            },
+            {
+              from: { element: { type: 'core' } },
+              allow: { to: { element: { type: 'test' } } },
             },
           ],
         },

@@ -28,6 +28,8 @@ export interface Auth {
   getToken: () => Promise<string>;
   /** The roles of the configured roles resource (resource_access[rolesResource].roles). */
   roles: () => string[];
+  /** The Keycloak subject (`sub`) of the signed-in user, the user id the backend stores. */
+  userId: () => string;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -72,6 +74,9 @@ export async function initAuth(
         keycloak.tokenParsed?.resource_access?.[config.rolesResource]?.roles ??
         []
       );
+    },
+    userId() {
+      return keycloak.tokenParsed?.sub ?? '';
     },
     login: () => keycloak.login(),
     logout: () => keycloak.logout(),
