@@ -141,7 +141,7 @@ export default tseslint.config(
               allow: {
                 to: {
                   element: {
-                    types: ['app', 'core', 'feature', 'shared'],
+                    types: ['app', 'core', 'feature', 'shared', 'test'],
                   },
                 },
               },

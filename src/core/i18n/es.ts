@@ -76,5 +76,21 @@ export const es: Translation = {
   },
   shell: {
     logout: 'Cerrar sesión',
+    logoAlt: 'ERAS',
+    menuLabel: 'Menú principal',
+    openMenu: 'Abrir menú',
+    userMenu: 'Menú de usuario',
+    menu: {
+      home: 'Inicio',
+    },
+    titles: {
+      home: 'Inicio',
+    },
+    roles: {
+      administrator: 'Administrador de ERAS',
+      officer: 'Oficial de Servicios Estudiantiles de ERAS',
+      professional: 'Profesional de ERAS',
+      guest: 'Invitado',
+    },
   },
 };

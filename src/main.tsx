@@ -21,6 +21,7 @@ async function start() {
   const httpClient = createHttpClient(auth);
   const session = {
     userId: auth.userId(),
+    userName: auth.userName(),
     roles: auth.roles(),
     roleNames: config.roleNames,
     logout: auth.logout,

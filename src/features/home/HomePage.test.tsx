@@ -202,8 +202,12 @@ describe('HomePage', () => {
     const logout = vi.fn(() => Promise.resolve());
     await renderWithProviders({ roles: [], path: '/home', logout });
 
+    // Log out lives in the user menu of the header (change 0010-add-v3-shell, design D5).
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Log out' })
+      await screen.findByRole('button', { name: 'User menu' })
+    );
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Log out' })
     );
 
     expect(logout).toHaveBeenCalledOnce();

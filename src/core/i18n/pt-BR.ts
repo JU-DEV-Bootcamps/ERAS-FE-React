@@ -76,5 +76,21 @@ export const ptBR: Translation = {
   },
   shell: {
     logout: 'Sair',
+    logoAlt: 'ERAS',
+    menuLabel: 'Menu principal',
+    openMenu: 'Abrir menu',
+    userMenu: 'Menu do usuário',
+    menu: {
+      home: 'Início',
+    },
+    titles: {
+      home: 'Início',
+    },
+    roles: {
+      administrator: 'Administrador do ERAS',
+      officer: 'Oficial de Serviços Estudantis do ERAS',
+      professional: 'Profissional do ERAS',
+      guest: 'Convidado',
+    },
   },
 };

@@ -133,6 +133,24 @@ describe('initAuth', () => {
     expect(auth.userId()).toBe('user-123');
   });
 
+  it('names the user with the given and family name of the token', async () => {
+    const { auth, keycloak } = await start();
+    keycloak.tokenParsed = { given_name: 'Ana', family_name: 'Torres' };
+    expect(auth.userName()).toBe('Ana Torres');
+  });
+
+  it('names the user with the full name when the parts are missing', async () => {
+    const { auth, keycloak } = await start();
+    keycloak.tokenParsed = { name: 'Ana Torres' };
+    expect(auth.userName()).toBe('Ana Torres');
+  });
+
+  it('has an empty user name when the token carries no name', async () => {
+    const { auth, keycloak } = await start();
+    keycloak.tokenParsed = {};
+    expect(auth.userName()).toBe('');
+  });
+
   it('has an empty user id when the token carries no subject', async () => {
     const { auth, keycloak } = await start();
     keycloak.tokenParsed = {};

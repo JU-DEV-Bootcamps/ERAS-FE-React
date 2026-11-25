@@ -28,6 +28,7 @@ beforeAll(async () => {
 function renderAt(path: string, roles: string[]) {
   const session: Session = {
     userId: 'user-1',
+    userName: 'Test User',
     roles,
     roleNames,
     logout: () => Promise.resolve(),

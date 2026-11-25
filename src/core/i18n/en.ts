@@ -75,6 +75,22 @@ export const en = {
   },
   shell: {
     logout: 'Log out',
+    logoAlt: 'ERAS',
+    menuLabel: 'Main menu',
+    openMenu: 'Open menu',
+    userMenu: 'User menu',
+    menu: {
+      home: 'Home',
+    },
+    titles: {
+      home: 'Home',
+    },
+    roles: {
+      administrator: 'ERAS Administrator',
+      officer: 'ERAS Student Services Officer',
+      professional: 'ERAS Professional',
+      guest: 'Guest',
+    },
   },
 };
 

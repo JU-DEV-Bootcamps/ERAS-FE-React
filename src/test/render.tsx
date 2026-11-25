@@ -21,6 +21,8 @@ interface RenderOptions {
   roles: readonly string[];
   path?: string;
   userId?: string;
+  /** The name shown in the header and the user menu. */
+  userName?: string;
   /** The session's logout; a test passes a spy to see it run. */
   logout?: () => Promise<void>;
 }
@@ -29,10 +31,12 @@ export async function renderWithProviders({
   roles,
   path = '/',
   userId = 'user-1',
+  userName = 'Test User',
   logout = () => Promise.resolve(),
 }: RenderOptions) {
   const session: Session = {
     userId,
+    userName,
     roles,
     roleNames,
     logout,

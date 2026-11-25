@@ -30,8 +30,22 @@ export interface Auth {
   roles: () => string[];
   /** The Keycloak subject (`sub`) of the signed-in user, the user id the backend stores. */
   userId: () => string;
+  /** The signed-in user's first and last name from the token, or its full name, or an empty string. */
+  userName: () => string;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+}
+
+function text(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+/** The name to show for the user: given and family name, else the full name (design D4 of change 0010). */
+function userNameOf(token: KeycloakLike['tokenParsed']): string {
+  const parts = [text(token?.given_name), text(token?.family_name)].filter(
+    part => part !== ''
+  );
+  return parts.length > 0 ? parts.join(' ') : text(token?.name);
 }
 
 const createKeycloak: KeycloakFactory = options => new Keycloak(options);
@@ -77,6 +91,9 @@ export async function initAuth(
     },
     userId() {
       return keycloak.tokenParsed?.sub ?? '';
+    },
+    userName() {
+      return userNameOf(keycloak.tokenParsed);
     },
     login: () => keycloak.login(),
     logout: () => keycloak.logout(),

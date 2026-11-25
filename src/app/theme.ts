@@ -31,6 +31,43 @@ export interface LabelPalette {
     active: LabelColors;
     inactive: LabelColors;
   };
+  /** The shell, as v2 draws it (design D7 of change 0010), from v2's sidebar, layout and header-v2 styles. */
+  shell: ShellTokens;
+}
+
+/** The side menu and header of the v3 shell: colours, sizes and weights copied from v2. */
+export interface ShellTokens {
+  menu: {
+    background: string;
+    text: string;
+    hover: string;
+    active: string;
+    divider: string;
+    fontSize: string;
+    fontWeight: number;
+    itemHeight: string;
+    itemRadius: string;
+    itemWidth: string;
+    logoPadding: string;
+  };
+  header: {
+    height: string;
+    mobileHeight: string;
+    border: string;
+    title: string;
+    titleSize: string;
+    titleWeight: number;
+    textSize: string;
+    name: string;
+    nameWeight: number;
+    role: string;
+    roleWeight: number;
+    icon: string;
+    /** v2's user-menu .main-button: a filled circle with avatarPlaceholder.svg in white. */
+    avatarSize: string;
+    avatarImageWidth: string;
+    avatarImageHeight: string;
+  };
 }
 
 declare module '@mui/material/styles' {
@@ -67,6 +104,40 @@ const labels: LabelPalette = {
     icon: { background: '#DBEAFE', text: '#2563EB' },
     active: { background: '#ECFDF3', text: '#15803D' },
     inactive: { background: '#FEE2E2', text: '#991B1B' },
+  },
+  shell: {
+    // v2: sidebar.component-v2.scss and the new-theme background of layout.component.scss.
+    menu: {
+      background: '#117473',
+      text: '#FFFFFF',
+      hover: 'rgba(19, 91, 92, 0.5)',
+      active: '#144D4D',
+      divider: 'rgba(255, 255, 255, 0.25)',
+      fontSize: '15px',
+      fontWeight: 500,
+      itemHeight: '56px',
+      itemRadius: '8px',
+      itemWidth: '95%',
+      logoPadding: '24px 20px',
+    },
+    // v2: header-v2.component.scss with the tokens of styles/utils/index.scss.
+    header: {
+      height: '84px',
+      mobileHeight: '64px',
+      border: '#D1D0D0',
+      title: '#144D4D',
+      titleSize: '28px',
+      titleWeight: 500,
+      textSize: '14px',
+      name: '#313030',
+      nameWeight: 600,
+      role: '#605E5E',
+      roleWeight: 450,
+      icon: '#144D4D',
+      avatarSize: '32px',
+      avatarImageWidth: '23px',
+      avatarImageHeight: '21px',
+    },
   },
 };
 

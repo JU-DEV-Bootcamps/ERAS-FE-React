@@ -30,6 +30,7 @@ describe('App', () => {
         i18n={await initI18n()}
         session={{
           userId: 'user-1',
+          userName: 'Test User',
           roles: ['ERAS Professional'],
           roleNames,
           logout,
@@ -44,7 +45,10 @@ describe('App', () => {
     expect(
       await screen.findByRole('heading', { name: 'Overview' })
     ).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Log out' }));
+    await userEvent.click(screen.getByRole('button', { name: 'User menu' }));
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: 'Log out' })
+    );
     expect(logout).toHaveBeenCalledOnce();
   });
 });
